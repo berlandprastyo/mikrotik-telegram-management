@@ -1,13 +1,15 @@
+# make scheduler run every 8s
 /system scheduler add name=telegram-management interval=8s on-event={
 :global offset
 
-
+# send message after reboot
 :if ([:len [/file find name="reboot-routeros.txt"]] > 0) do={
 :local encode [:convert "Reboot done!" to=url]
 /tool fetch url=("https://api.telegram.org/bot" . $telegramToken . "/sendMessage?chat_id=" . $telegramChatid . "&text=" . $encode) keep-result=n
 /file remove [find name="reboot-routeros.txt"]
 }
 
+# parse json from API telegram
 
 :local fetch [/tool fetch url=("https://api.telegram.org/bot" . $telegramToken . "/getUpdates?offset=" .$offset) as-value output=user];
 :local json [:deserialize from=json value=($fetch -> "data")];
@@ -17,6 +19,7 @@
 :local message ""
 :local text ($update -> "message" -> "text")
 
+# handle /interface command
 
 :if ($text = "/interface") do={
 :set $message ("=======STATUS INTERFACE=======\n")
@@ -36,6 +39,7 @@
 :set $message ($message . "DATE : $date\nTIME : $time $timezone")
 }
 
+# handle /status command
 
 :if ($text = "/status") do={
 :local uptime [/system resource get uptime]
@@ -76,6 +80,7 @@
 
 }
 
+# handle /reboot command
 
 :local reboot false
 :if ($text = "/reboot") do={
@@ -84,6 +89,7 @@
 :set $message "Router will reboot..."
 }
 
+# send message
 
 :if ($message != "") do={
 :local encode [:convert $message to=url]
@@ -91,6 +97,8 @@
 }
 
 :set $offset ($update->"update_id" + 1)
+
+# reboot command
 
 :if ($reboot = true) do={
 /tool fetch url=("https://api.telegram.org/bot" . $telegramToken . "/getUpdates?offset=" .$offset) as-value output=user
