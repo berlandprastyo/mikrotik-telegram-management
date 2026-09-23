@@ -14,6 +14,17 @@ A MikroTik RouterOS script that allows you to check router information through a
 
 ## Telegram Commands
 
+### `/reboot`
+
+Restarts the MikroTik router using the `/reboot` command.
+
+Before the reboot, the bot sends a notification:
+
+```text
+Router akan melakukan reboot...
+
+The router will then restart. The reboot process may take around 1 minute, depending on the router and system startup time.
+
 ### `/interface`
 
 Manually checks the current status of all available router interfaces.

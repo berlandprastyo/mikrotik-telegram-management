@@ -56,6 +56,12 @@
 
 
 }
+:local reboot false
+:if ($text = "/reboot") do={
+:set $message "Router will reboot..."
+:set $reboot true
+}
+
 :if ($message != "") do={
 
 :local encode [:convert $message to=url]
@@ -64,6 +70,11 @@
 }
 
 :set $offset ($update->"update_id" + 1)
+
+:if ($reboot = true) do={
+/tool fetch url=("https://api.telegram.org/bot" . $telegramToken . "/getUpdates?offset=" .$offset) as-value output=user
+/system reboot
+}
 
 }
 }
