@@ -1,10 +1,23 @@
-/system scheduler add name=telegram-bot interval=8s on-event={
+/system scheduler add name=telegram-management interval=8s on-event={
 :global offset
+
+
+:if ([:len [/file find name="reboot-routeros.txt"]] > 0) do={
+:local encode [:convert "Reboot done!" to=url]
+/tool fetch url=("https://api.telegram.org/bot" . $telegramToken . "/sendMessage?chat_id=" . $telegramChatid . "&text=" . $encode) keep-result=n
+/file remove [find name="reboot-routeros.txt"]
+}
+
+
 :local fetch [/tool fetch url=("https://api.telegram.org/bot" . $telegramToken . "/getUpdates?offset=" .$offset) as-value output=user];
 :local json [:deserialize from=json value=($fetch -> "data")];
+
+
 :foreach update in ($json->"result") do={
 :local message ""
 :local text ($update -> "message" -> "text")
+
+
 :if ($text = "/interface") do={
 :set $message ("=======STATUS INTERFACE=======\n")
 :foreach i in=[/interface find] do={
@@ -22,7 +35,12 @@
 :local timezone [/system clock get time-zone-name]
 :set $message ($message . "DATE : $date\nTIME : $time $timezone")
 }
+
+
 :if ($text = "/status") do={
+:local uptime [/system resource get uptime]
+:local version [/system resource get version]
+:local architecture [/system resource get architecture-name]
 :local cpuStatus
 :local memStatus
 :local cpu [/system resource get cpu-load]
@@ -30,7 +48,6 @@
 :local totalMem [/system resource get total-memory]
 :local totalMemMB ($totalMem / 1048576)
 :local usedMem (($totalMem - $freeMem) / 1048576)
-
 :local percentMem ($usedMem * 100 / $totalMem)
 :local date [/system clock get date]
 :local time [/system clock get time]
@@ -46,7 +63,9 @@
 :set memStatus "NORMAL"
 }
 :set $message ("RESOURCE STATUS\n=========================\n" . \
-                "CPU USAGE           : $cpu" . "%\n" . \
+		"UPTIME                    : $uptime\n" . \
+		"VERSION     		    : $version $architecture\n" . \
+                "CPU USAGE            : $cpu" . "%\n" . \
                 "CPU STATUS           : $cpuStatus\n" . \
                 "TOTAL MEMORY    : $totalMemMB" . "MB\n" . \
 		"STATUS MEMORY  : $memStatus\n" . \
@@ -56,17 +75,19 @@
 
 
 }
+
+
 :local reboot false
 :if ($text = "/reboot") do={
-:set $message "Router will reboot..."
+/file print file reboot-routeros.txt
 :set $reboot true
+:set $message "Router will reboot..."
 }
 
-:if ($message != "") do={
 
+:if ($message != "") do={
 :local encode [:convert $message to=url]
 /tool fetch url=("https://api.telegram.org/bot" . $telegramToken . "/sendMessage?chat_id=" . $telegramChatid . "&text=" . $encode) keep-result=no
-
 }
 
 :set $offset ($update->"update_id" + 1)
@@ -75,6 +96,7 @@
 /tool fetch url=("https://api.telegram.org/bot" . $telegramToken . "/getUpdates?offset=" .$offset) as-value output=user
 /system reboot
 }
+
 
 }
 }

@@ -5,12 +5,12 @@ A MikroTik RouterOS script that allows you to check and manage the router throug
 ## Features
 
 * Check the status of all MikroTik interfaces using the `/interface` command
-* Check CPU and memory usage using the `/status` command
-* Restart the router using the `/reboot` command
-* Display interface status as `Link Up` or `Link Down`
+* Check router resource using the `/status` command
 * Display CPU and memory status as `NORMAL` or `HIGH`
 * Use an 80% threshold for CPU and memory usage
 * Display the current date and time
+* Restart the router using the `/reboot` command
+* Send a notification before and after the router reboots
 * Send and receive messages through the Telegram Bot API
 
 ## Telegram Commands
@@ -68,10 +68,14 @@ Restarts the MikroTik router using the `/reboot` command.
 Before the reboot, the bot sends a notification:
 
 ```text
-Router will reboot
+Router will reboot...
 ```
 
-But after reboot router dont send message again
+After reboot, the bot sends a notification:
+
+```text
+Reboot done!
+```
 
 The reboot process may take around 1 minute, depending on the router and system startup time.
 
