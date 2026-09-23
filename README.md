@@ -1,29 +1,19 @@
 # MikroTik Telegram Management
 
-A MikroTik RouterOS script that allows you to check router information through a Telegram bot.
+A MikroTik RouterOS script that allows you to check and manage the router through a Telegram bot.
 
 ## Features
 
 * Check the status of all MikroTik interfaces using the `/interface` command
 * Check CPU and memory usage using the `/status` command
+* Restart the router using the `/reboot` command
 * Display interface status as `Link Up` or `Link Down`
 * Display CPU and memory status as `NORMAL` or `HIGH`
 * Use an 80% threshold for CPU and memory usage
 * Display the current date and time
-* Receive and send messages through the Telegram Bot API
+* Send and receive messages through the Telegram Bot API
 
 ## Telegram Commands
-
-### `/reboot`
-
-Restarts the MikroTik router using the `/reboot` command.
-
-Before the reboot, the bot sends a notification:
-
-```text
-Router akan melakukan reboot...
-
-The router will then restart. The reboot process may take around 1 minute, depending on the router and system startup time.
 
 ### `/interface`
 
@@ -63,21 +53,39 @@ Example:
 RESOURCE STATUS
 =========================
 CPU USAGE           : 5%
-CPU STATUS           : NORMAL
+CPU STATUS          : NORMAL
 TOTAL MEMORY        : 256MB
-STATUS MEMORY       : NORMAL
-MEMORY USAGE        : 202MB
+STATUS MEMORY      : NORMAL
+MEMORY USAGE       : 202MB
 DATE                : 2026-09-23
 TIME                : 11:01:25 Asia/Jakarta
 ```
 
-### Resource Threshold
+### `/reboot`
+
+Restarts the MikroTik router using the `/reboot` command.
+
+Before the reboot, the bot sends a notification:
+
+```text
+Router akan melakukan reboot...
+```
+
+After the router finishes rebooting, the bot sends:
+
+```text
+Router selesai melakukan reboot
+```
+
+The reboot process may take around 1 minute, depending on the router and system startup time.
+
+## Resource Threshold
 
 CPU and memory usage use an 80% threshold:
 
 ```text
-Usage < 80%  → NORMAL
-Usage >= 80% → HIGH
+Usage < 80%   NORMAL
+Usage >= 80%  HIGH
 ```
 
 ## Requirements
@@ -92,7 +100,7 @@ Usage >= 80% → HIGH
 
 ### 1. Configure Telegram
 
-Edit `config.rsc`:
+Edit `config.rsc` and add your Telegram Bot Token and Chat ID:
 
 ```routeros
 :global telegramToken "YOUR_BOT_TOKEN"
@@ -115,7 +123,7 @@ Edit `config.rsc`:
 
 **Do not publish your real Telegram Bot Token or Chat ID in a public repository.**
 
-Use placeholder values in `config.rsc` before uploading the project to GitHub.
+Use placeholder values in `config.rsc` before uploading the project to GitHub:
 
 ```routeros
 :global telegramToken "YOUR_BOT_TOKEN"
