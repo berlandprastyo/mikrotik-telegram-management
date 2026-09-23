@@ -68,14 +68,10 @@ Restarts the MikroTik router using the `/reboot` command.
 Before the reboot, the bot sends a notification:
 
 ```text
-Router akan melakukan reboot...
+Router will reboot
 ```
 
-After the router finishes rebooting, the bot sends:
-
-```text
-Router selesai melakukan reboot
-```
+But after reboot router dont send message again
 
 The reboot process may take around 1 minute, depending on the router and system startup time.
 
