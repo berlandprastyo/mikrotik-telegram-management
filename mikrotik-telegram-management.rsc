@@ -89,6 +89,30 @@
 :set $message "Router will reboot..."
 }
 
+# handle /ping command
+
+:if ([:pick $text 0 5] = "/ping") do={
+:local target [:pick $text 6 [:len $text]]
+:local ping [/ping $target count=1 as-value]
+:local timems
+:local pingStatus
+:if ([:typeof ($ping -> "time")] != "nothing") do={
+:set $pingStatus "REACHABLE"
+:local mikrosekon [:pick ($ping->"time") 9 [:len ($ping->"time")]]
+:local msInteger ([:tonum $mikrosekon] / 1000)
+:local msDecimal ([:tonum $mikrosekon] % 1000)
+:set $timems ($msInteger . "." . $msDecimal)
+} else={
+:set $pingStatus "UNREACHABLE"
+:set $timems "N/A"
+}
+:set $message ("PING STATUS\n===================\n" . \
+		"TARGET : $target\n" . \
+		"STATUS : $pingStatus\n" . \
+		"TIME    : $timems" . " ms")
+
+}
+
 # send message
 
 :if ($message != "") do={

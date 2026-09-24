@@ -12,6 +12,7 @@ A MikroTik RouterOS script that allows you to check and manage the router throug
 * Restart the router using the `/reboot` command
 * Send a notification before and after the router reboots
 * Send and receive messages through the Telegram Bot API
+* Ping an IP address or hostname and return its reachability status and response time
 
 ## Telegram Commands
 
@@ -59,6 +60,19 @@ STATUS MEMORY      : NORMAL
 MEMORY USAGE       : 202MB
 DATE                : 2026-09-23
 TIME                : 11:01:25 Asia/Jakarta
+```
+### `/Ping <target>`
+Check reachability of IP address or hostname using `/ping` command.
+The output is reachability status and response time.
+
+Example :
+
+```text
+PING STATUS
+===================
+TARGET : google.com
+STATUS : REACHABLE
+TIME    : 71.163 ms
 ```
 
 ### `/reboot`
