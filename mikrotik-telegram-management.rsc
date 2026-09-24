@@ -48,10 +48,9 @@
 :local cpuStatus
 :local memStatus
 :local cpu [/system resource get cpu-load]
-:local freeMem [/system resource get free-memory]
-:local totalMem [/system resource get total-memory]
-:local totalMemMB ($totalMem / 1048576)
-:local usedMem (($totalMem - $freeMem) / 1048576)
+:local freeMem ([/system resource get free-memory] / 1048576)
+:local totalMem ([/system resource get total-memory] / 1048576)
+:local usedMem ($totalMem - $freeMem)
 :local percentMem ($usedMem * 100 / $totalMem)
 :local date [/system clock get date]
 :local time [/system clock get time]
@@ -71,7 +70,7 @@
 		"VERSION     		    : $version $architecture\n" . \
                 "CPU USAGE            : $cpu" . "%\n" . \
                 "CPU STATUS           : $cpuStatus\n" . \
-                "TOTAL MEMORY    : $totalMemMB" . "MB\n" . \
+                "TOTAL MEMORY    : $totalMem" . "MB\n" . \
 		"STATUS MEMORY  : $memStatus\n" . \
                 "MEMORY USAGE   : $usedMem" . "MB\n" . \
                 "DATE                        : $date\n" . \
