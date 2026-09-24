@@ -63,7 +63,7 @@ TIME                : 11:01:25 Asia/Jakarta
 ```
 ### `/Ping <target>`
 Check reachability of IP address or hostname using `/ping` command.
-The output is reachability status and response time.
+The output is reachability status, packets lost and response time.
 
 Example :
 
@@ -71,8 +71,11 @@ Example :
 PING STATUS
 ===================
 TARGET : google.com
+PACKETS SENT : 4
+RECEIVED : 4
+PACKETS LOST : 0
 STATUS : REACHABLE
-TIME    : 71.163 ms
+AVG TIME    : 59.132 ms
 ```
 
 ### `/reboot`

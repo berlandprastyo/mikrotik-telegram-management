@@ -92,23 +92,44 @@
 
 :if ([:pick $text 0 5] = "/ping") do={
 :local target [:pick $text 6 [:len $text]]
-:local ping [/ping $target count=1 as-value]
-:local timems
+:local successPing 0
 :local pingStatus
-:if ([:typeof ($ping -> "time")] != "nothing") do={
-:set $pingStatus "REACHABLE"
-:local mikrosekon [:pick ($ping->"time") 9 [:len ($ping->"time")]]
-:local msInteger ([:tonum $mikrosekon] / 1000)
-:local msDecimal ([:tonum $mikrosekon] % 1000)
-:set $timems ($msInteger . "." . $msDecimal)
-} else={
-:set $pingStatus "UNREACHABLE"
-:set $timems "N/A"
+:local times 0
+:local avgtimesInt
+:local avgtimesFlt
+:foreach i in ([/ping $target count=4 as-value]) do={
+:if ([:typeof ($i -> "time")] != "nothing") do={
+:local mikrosekon [:tonum [:pick ($i->"time") 9 [:len ($i->"time")]]] 
+:set $times ($times + $mikrosekon)
+:set $successPing ($successPing + 1)
 }
+}
+:if ($successPing > 0) do={
+:local avgtimes ($times / $successPing)
+:set avgtimesInt ($avgtimes / 1000)
+:set avgtimesFlt ($avgtimes % 1000)
+:if ($avgtimesFlt < 10) do={
+:set $avgtimesFlt ("00" . $avgtimesFlt)
+} else={
+	:if ($avgtimesFlt < 100) do={
+	:set $avgtimesFlt ("0" . $avgtimesFlt)
+}
+}
+:set $pingStatus "REACHABLE"
+} else={
+:set avgtimesInt 0
+:set avgtimesFlt 0
+:set $pingStatus "UNREACHABLE"
+}
+:local pkglost (4 - $successPing)
+
 :set $message ("PING STATUS\n===================\n" . \
 		"TARGET : $target\n" . \
+		"PACKETS SENT : 4\n" . \
+		"RECEIVED : $successPing\n" . \
+		"PACKETS LOST : $pkglost\n" . \
 		"STATUS : $pingStatus\n" . \
-		"TIME    : $timems" . " ms")
+		"AVG TIME    : $avgtimesInt" . "." . "$avgtimesFlt ms")
 
 }
 
